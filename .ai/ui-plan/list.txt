@@ -1,0 +1,8 @@
+Strona z dużymi obrazami:
+Widok, który umożliwia testowanie strategii cache'owania z wykorzystaniem dużych zasobów graficznych.
+
+Strona z małymi zasobami:
+Widok, który zawiera wiele małych zasobów, takich jak ikony, style CSS i skrypty JS, do testowania wydajności.
+
+Strona z dynamicznie ładowanym JavaScript:
+Widok, który testuje, jak różne strategie cache'owania radzą sobie z dynamicznie ładowanym kodem JavaScript.

@@ -68,8 +68,6 @@ CacheTest PWA odpowiada na pytanie, która strategia cache'owania jest najlepsza
 
 Następujące elementy NIE są częścią MVP:
 
-- Implementacja backendu ani żadnej formy komunikacji z bazą danych
-- Dynamiczne treści wymagające autentykacji (np. logowanie, API z ograniczonym dostępem)
 - Realne wdrożenie aplikacji na serwerze produkcyjnym
 - Zaawansowane projektowanie UI/UX z naciskiem na estetykę
 - Automatyzacja testów (np. CI/CD, testy jednostkowe)
