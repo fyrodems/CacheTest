@@ -1,8 +1,8 @@
 ---
-import Welcome from "../components/Welcome.astro";
-import Layout from "../layouts/Layout.astro";
+import MainLayout from "../layouts/MainLayout.astro";
+import Dashboard from "../components/dashboard/Dashboard";
 ---
 
-<Layout>
-  <Welcome />
-</Layout>
+<MainLayout title="Dashboard - CacheTest PWA">
+  <Dashboard client:load />
+</MainLayout>
