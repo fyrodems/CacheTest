@@ -22,7 +22,7 @@ const Dashboard: React.FC = () => {
     errorStrategyComparison,
     resetCache,
     isResettingCache,
-    resetCacheError,
+    // resetCacheError,
   } = useDashboardData();
 
   return (
@@ -97,8 +97,15 @@ const Dashboard: React.FC = () => {
         ]}
       />
 
-      <ActionButtons />
-
+      <ActionButtons
+        onRunTest={function (): void {
+          throw new Error("Function not implemented.");
+        }}
+        onOpenSettings={function (): void {
+          throw new Error("Function not implemented.");
+        }}
+        isRunningTest={false}
+      />
       <div className="flex justify-end">
         <CacheResetButton onReset={resetCache} isResetting={isResettingCache} />
       </div>

@@ -15,7 +15,8 @@ import { toast } from "sonner";
 
 interface CacheResetButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  children: React.ReactNode;
+  isResetting?: boolean;
+  children?: React.ReactNode;
 }
 
 const CacheResetButton: React.FC<CacheResetButtonProps> = ({

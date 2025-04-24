@@ -1,13 +1,13 @@
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import TestSessionItem from "./TestSessionItem";
-import type { TestSessionViewModel } from "@/lib/types/dashboard";
+import type { RecentTestSessionViewModel } from "@/lib/types/dashboard";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 
 interface RecentTestSessionsListProps {
-  sessions: TestSessionViewModel[] | null;
+  sessions: RecentTestSessionViewModel[] | null;
   isLoading: boolean;
   error: Error | null;
 }
