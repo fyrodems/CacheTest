@@ -1,0 +1,67 @@
+---
+const currentPath = Astro.url.pathname;
+
+const links = [
+  { href: "/", label: "Dashboard", active: currentPath === "/" },
+  {
+    href: "/test/large-images",
+    label: "Duże obrazy",
+    active: currentPath === "/test/large-images",
+  },
+  {
+    href: "/test/small-resources",
+    label: "Małe zasoby",
+    active: currentPath === "/test/small-resources",
+  },
+  {
+    href: "/test/dynamic-js",
+    label: "Dynamiczny JS",
+    active: currentPath === "/test/dynamic-js",
+  },
+  {
+    href: "/history",
+    label: "Historia testów",
+    active: currentPath === "/history",
+  },
+  {
+    href: "/education",
+    label: "Materiały edukacyjne",
+    active: currentPath === "/education",
+  },
+];
+---
+
+<aside
+  class="hidden md:block w-64 border-r border-border/40 h-screen px-3 py-4 overflow-y-auto bg-muted/40"
+>
+  <div class="flex flex-col h-full">
+    <div class="mb-6">
+      <h2 class="text-xl font-bold">CacheTest PWA</h2>
+      <p class="text-sm text-muted-foreground">
+        Testowanie strategii cache'owania
+      </p>
+    </div>
+    <nav class="space-y-1 flex-1">
+      {
+        links.map((link) => (
+          <a
+            href={link.href}
+            class={`group flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+              link.active
+                ? "bg-primary text-primary-foreground"
+                : "text-foreground hover:bg-muted hover:text-primary"
+            }`}
+          >
+            {link.label}
+          </a>
+        ))
+      }
+    </nav>
+    <div class="mt-auto pt-4 border-t border-border/40">
+      <div class="text-xs text-muted-foreground">
+        <p>Wersja: 1.0.0</p>
+      </div>
+    </div>
+  </div>
+</aside>
+

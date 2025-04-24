@@ -1,0 +1,17 @@
+---
+import MainLayout from "../../layouts/MainLayout.astro";
+import { DynamicJSPage } from "../../components/test/DynamicJSPage";
+---
+
+<MainLayout title="Test dynamicznego JS | CacheTest PWA">
+  <div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-4">Test dynamicznego JavaScript</h1>
+    <p class="mb-6 text-muted-foreground">
+      Testuj wydajność różnych strategii cache'owania dla dynamicznie ładowanego
+      kodu JavaScript.
+    </p>
+
+    <DynamicJSPage client:load />
+  </div>
+</MainLayout>
+

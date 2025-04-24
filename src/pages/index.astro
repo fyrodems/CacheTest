@@ -1,8 +1,11 @@
 ---
 import MainLayout from "../layouts/MainLayout.astro";
 import Dashboard from "../components/dashboard/Dashboard";
+import { RootProvider } from "../components/providers/RootProvider";
 ---
 
 <MainLayout title="CacheTest PWA">
-  <Dashboard client:load />
+  <RootProvider client:load>
+    <Dashboard client:load />
+  </RootProvider>
 </MainLayout>

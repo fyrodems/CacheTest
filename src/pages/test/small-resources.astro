@@ -1,0 +1,17 @@
+---
+import MainLayout from "../../layouts/MainLayout.astro";
+import { SmallResourcesPage } from "../../components/test/SmallResourcesPage";
+---
+
+<MainLayout title="Test małych zasobów | CacheTest PWA">
+  <div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-4">Test małych zasobów</h1>
+    <p class="mb-6 text-muted-foreground">
+      Testuj wydajność różnych strategii cache'owania dla małych zasobów (CSS,
+      JS, ikony).
+    </p>
+
+    <SmallResourcesPage client:load />
+  </div>
+</MainLayout>
+
