@@ -34,6 +34,10 @@ export const AppProvider = ({ children }: AppProviderProps) => {
   const [currentStrategy, setCurrentStrategy] = useState<CachingStrategy>(
     CachingStrategy.NETWORK_FIRST,
   );
+  // const [currentStrategy, setCurrentStrategy] = useState<string>(
+  //   // CachingStrategy.NETWORK_FIRST,
+  //   "network-first",
+  // );
 
   const [currentNetworkCondition, setCurrentNetworkCondition] =
     useState<NetworkCondition>(NetworkCondition.GOOD);

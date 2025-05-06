@@ -1,9 +1,10 @@
 ---
+// eslint-disable-next-line prettier/prettier
 import MainLayout from "../../layouts/MainLayout.astro";
-import { ReportPage } from "../../components/test/ReportPage";
+// import { ReportPage } from "../../components/test/ReportPage";
 
 const { id } = Astro.params;
-
+ // <ReportPage client:load id={id} />
 if (!id) {
   return Astro.redirect("/404");
 }
@@ -14,7 +15,8 @@ if (!id) {
     <h1 class="text-3xl font-bold mb-4">Raport szczegółowy</h1>
     <p class="mb-6 text-muted-foreground">Szczegółowa analiza wyników testu.</p>
 
-    <ReportPage client:load id={id} />
+   
+     
   </div>
 </MainLayout>
 

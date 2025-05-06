@@ -1,7 +1,7 @@
 ---
 // eslint-disable-next-line prettier/prettier
 import MainLayout from "../../layouts/MainLayout.astro";
-import { DynamicJSPage } from "../../components/test/DynamicJSPage";
+import DynamicJSWrapper from "@/components/providersWrappers/DynamicJSWrapper";
 ---
 
 <MainLayout title="Test dynamicznego JS | CacheTest PWA">
@@ -12,7 +12,7 @@ import { DynamicJSPage } from "../../components/test/DynamicJSPage";
       kodu JavaScript.
     </p>
 
-    <DynamicJSPage client:load />
+    <DynamicJSWrapper client:load />
   </div>
 </MainLayout>
 
