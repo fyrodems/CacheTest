@@ -1,6 +1,7 @@
 ---
+// eslint-disable-next-line prettier/prettier
 import MainLayout from "../../layouts/MainLayout.astro";
-import { LargeImagesPage } from "../../components/test/LargeImagesPage";
+import LargeImagesWrapper from "@/components/providersWrappers/LargeImagesWrapper";
 ---
 
 <MainLayout title="Test dużych obrazów | CacheTest PWA">
@@ -11,7 +12,6 @@ import { LargeImagesPage } from "../../components/test/LargeImagesPage";
       obrazowych.
     </p>
 
-    <LargeImagesPage client:load />
+    <LargeImagesWrapper client:load />
   </div>
 </MainLayout>
-

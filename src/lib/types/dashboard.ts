@@ -3,7 +3,7 @@ import type { TestResultMetricsDTO } from "../../types";
 /**
  * Model danych dla karty wyniku testu
  */
-export type TestResultCardViewModel = {
+export interface TestResultCardViewModel {
   id: string;
   strategy_type: string;
   timestamp_end: string;
@@ -17,13 +17,13 @@ export type TestResultCardViewModel = {
     ttfb?: number | null;
     offline_availability?: boolean | null;
   };
-  performanceIndicator: 'good' | 'medium' | 'poor';
-};
+  performanceIndicator: "good" | "medium" | "poor";
+}
 
 /**
  * Model danych dla skróconego raportu
  */
-export type MiniReportViewModel = {
+export interface MiniReportViewModel {
   id: string;
   strategy_type: string;
   timestamp_end: string;
@@ -36,46 +36,48 @@ export type MiniReportViewModel = {
     ttfb?: number | null;
     offline_availability?: boolean | null;
   };
-  performanceIndicator: 'good' | 'medium' | 'poor';
-};
+  performanceIndicator: "good" | "medium" | "poor";
+}
 
 /**
  * Model danych dla wykresu porównującego strategie
  */
-export type StrategyComparisonViewModel = {
+export interface StrategyComparisonViewModel {
   strategies: string[];
   metrics: Record<string, number[]>;
   bestStrategy: string;
   bestMetrics: Record<string, string>;
-};
+}
 
 /**
  * Model danych dla sesji testowej
  */
-export type RecentTestSessionViewModel = {
+export interface RecentTestSessionViewModel {
   id: string;
   name: string;
   description: string | null;
   created_at: string;
   duration: string | null;
   testCount?: number;
-  status: 'success' | 'failed' | 'pending' | 'unknown';
-};
+  status: "success" | "failed" | "pending" | "unknown";
+}
 
 /**
  * Model danych dla informacji o strategii cache'owania
  */
-export type CachingStrategyInfoViewModel = {
+export interface CachingStrategyInfoViewModel {
   name: string;
   description: string;
   useCase: string;
   learnMoreUrl: string;
-};
+}
 
 /**
  * Funkcja obliczająca wskaźnik wydajności na podstawie metryk
  */
-export function calculatePerformanceIndicator(metrics: TestResultMetricsDTO): 'good' | 'medium' | 'poor' {
+export function calculatePerformanceIndicator(
+  metrics: TestResultMetricsDTO,
+): "good" | "medium" | "poor" {
   // Progi dla poszczególnych metryk
   const thresholds = {
     fp: { good: 1000, medium: 2000 }, // milliseconds
@@ -93,9 +95,9 @@ export function calculatePerformanceIndicator(metrics: TestResultMetricsDTO): 'g
   for (const [key, value] of Object.entries(metrics)) {
     if (value !== undefined && value !== null && key in thresholds) {
       const threshold = thresholds[key as keyof typeof thresholds];
-      if (value <= threshold.good) {
+      if (typeof value === "number" && value <= threshold.good) {
         scores += 3; // good
-      } else if (value <= threshold.medium) {
+      } else if (typeof value === "number" && value <= threshold.medium) {
         scores += 2; // medium
       } else {
         scores += 1; // poor
@@ -105,31 +107,34 @@ export function calculatePerformanceIndicator(metrics: TestResultMetricsDTO): 'g
   }
 
   // Obliczanie średniego wyniku
-  if (metricsCount === 0) return 'medium'; // Domyślnie medium, jeśli brak metryk
-  
+  if (metricsCount === 0) return "medium"; // Domyślnie medium, jeśli brak metryk
+
   const averageScore = scores / metricsCount;
-  
-  if (averageScore >= 2.5) return 'good';
-  if (averageScore >= 1.5) return 'medium';
-  return 'poor';
+
+  if (averageScore >= 2.5) return "good";
+  if (averageScore >= 1.5) return "medium";
+  return "poor";
 }
 
 /**
  * Funkcja formatująca wartość metryki do wyświetlenia
  */
-export function formatMetricValue(key: string, value: number | null | undefined): string {
-  if (value === undefined || value === null) return 'N/A';
-  
+export function formatMetricValue(
+  key: string,
+  value: number | null | undefined,
+): string {
+  if (value === undefined || value === null) return "N/A";
+
   switch (key) {
-    case 'fp':
-    case 'fcp':
-    case 'tti':
-    case 'lcp':
-    case 'fid':
-    case 'ttfb':
+    case "fp":
+    case "fcp":
+    case "tti":
+    case "lcp":
+    case "fid":
+    case "ttfb":
       return `${value.toFixed(0)} ms`;
-    case 'offline_availability':
-      return value ? 'Tak' : 'Nie';
+    case "offline_availability":
+      return value ? "Tak" : "Nie";
     default:
       return `${value}`;
   }
@@ -140,14 +145,14 @@ export function formatMetricValue(key: string, value: number | null | undefined)
  */
 export function getMetricLabel(key: string): string {
   const labels: Record<string, string> = {
-    fp: 'First Paint',
-    fcp: 'First Contentful Paint',
-    tti: 'Time to Interactive',
-    lcp: 'Largest Contentful Paint',
-    fid: 'First Input Delay',
-    ttfb: 'Time to First Byte',
-    offline_availability: 'Dostępność offline'
+    fp: "First Paint",
+    fcp: "First Contentful Paint",
+    tti: "Time to Interactive",
+    lcp: "Largest Contentful Paint",
+    fid: "First Input Delay",
+    ttfb: "Time to First Byte",
+    offline_availability: "Dostępność offline",
   };
-  
+
   return labels[key] || key;
-} 
+}

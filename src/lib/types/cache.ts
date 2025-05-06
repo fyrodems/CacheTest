@@ -5,7 +5,7 @@ export enum CachingStrategy {
   NETWORK_FIRST = "network-first",
   CACHE_FIRST = "cache-first",
   STALE_WHILE_REVALIDATE = "stale-while-revalidate",
-  CACHE_THEN_NETWORK = "cache-then-network"
+  CACHE_THEN_NETWORK = "cache-then-network",
 }
 
 /**
@@ -15,7 +15,7 @@ export enum NetworkCondition {
   GOOD = "good",
   SLOW = "slow",
   FLAKY = "flaky",
-  OFFLINE = "offline"
+  OFFLINE = "offline",
 }
 
 /**
@@ -70,7 +70,7 @@ export interface TestImageViewModel {
 export enum SmallResourceType {
   CSS = "css",
   JS = "js",
-  ICON = "icon"
+  ICON = "icon",
 }
 
 /**
@@ -143,4 +143,4 @@ export interface RecommendationViewModel {
   bestStrategy: CachingStrategy | null;
   metrics: Record<string, CachingStrategy>;
   explanation: string;
-} 
+}

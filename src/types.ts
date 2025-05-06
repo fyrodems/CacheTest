@@ -1,4 +1,5 @@
-import { Json, Tables, TablesInsert } from "./db/database.types";
+/* eslint-disable @typescript-eslint/consistent-type-definitions */
+import { type Json, type Tables, type TablesInsert } from "./db/database.types";
 
 /**
  * Common types
@@ -34,12 +35,16 @@ export type TestSessionResponseDTO = Tables<"test_sessions">;
 /**
  * Response DTO for a list of test sessions
  */
-export type TestSessionListResponseDTO = ListResponseDTO<TestSessionResponseDTO>;
+export type TestSessionListResponseDTO =
+  ListResponseDTO<TestSessionResponseDTO>;
 
 /**
  * Command model for creating a new test session
  */
-export type CreateTestSessionDTO = Pick<TablesInsert<"test_sessions">, "name" | "description">;
+export type CreateTestSessionDTO = Pick<
+  TablesInsert<"test_sessions">,
+  "name" | "description"
+>;
 
 /**
  * Command model for updating an existing test session
@@ -76,7 +81,10 @@ export type TestResultListResponseDTO = ListResponseDTO<TestResultResponseDTO>;
 /**
  * Command model for creating a new test result
  */
-export type CreateTestResultDTO = Pick<TablesInsert<"test_results">, "session_id" | "strategy_type"> & 
+export type CreateTestResultDTO = Pick<
+  TablesInsert<"test_results">,
+  "session_id" | "strategy_type"
+> &
   TestResultMetricsDTO & {
     raw_metrics?: Json | null;
   };
@@ -93,11 +101,11 @@ export type MetricComparisonDTO = {
  * Response DTO for test results comparison
  */
 export type TestResultComparisonResponseDTO = {
-  results: Array<{
+  results: {
     id: string;
     strategy_type: string;
     metrics: TestResultMetricsDTO;
-  }>;
+  }[];
   comparison: {
     best_overall: string; // ID of the best overall performing test result
     metrics_comparison: {
@@ -157,7 +165,8 @@ export type ResourceMetricResponseDTO = Tables<"resource_metrics">;
 /**
  * Response DTO for a list of resource metrics
  */
-export type ResourceMetricListResponseDTO = ListResponseDTO<ResourceMetricResponseDTO>;
+export type ResourceMetricListResponseDTO =
+  ListResponseDTO<ResourceMetricResponseDTO>;
 
 /**
  * Command model for creating a resource metric
@@ -210,6 +219,7 @@ export type TestResultTagsResponseDTO = {
 export type CacheResetResponseDTO = {
   success: boolean;
   message: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   instructions?: Record<string, any>;
 };
 
