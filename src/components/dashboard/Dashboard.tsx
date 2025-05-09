@@ -6,8 +6,6 @@ import MiniReport from "./MiniReport";
 import StrategyComparisonChart from "./StrategyComparisonChart";
 import RecentTestSessionsList from "./RecentTestSessionsList";
 import CachingStrategiesInfo from "./CachingStrategiesInfo";
-import ActionButtons from "./ActionButtons";
-import CacheResetButton from "./CacheResetButton";
 
 const Dashboard: React.FC = () => {
   const {
@@ -20,8 +18,8 @@ const Dashboard: React.FC = () => {
     strategyComparison,
     isLoadingStrategyComparison,
     errorStrategyComparison,
-    resetCache,
-    isResettingCache,
+    // resetCache,
+    // isResettingCache,
     // resetCacheError,
   } = useDashboardData();
 
@@ -96,19 +94,6 @@ const Dashboard: React.FC = () => {
           },
         ]}
       />
-
-      <ActionButtons
-        onRunTest={function (): void {
-          throw new Error("Function not implemented.");
-        }}
-        onOpenSettings={function (): void {
-          throw new Error("Function not implemented.");
-        }}
-        isRunningTest={false}
-      />
-      <div className="flex justify-end">
-        <CacheResetButton onReset={resetCache} isResetting={isResettingCache} />
-      </div>
     </div>
   );
 };

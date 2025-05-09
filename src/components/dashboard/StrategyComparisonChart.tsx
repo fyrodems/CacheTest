@@ -64,9 +64,7 @@ const StrategyComparisonChart: React.FC<StrategyComparisonChartProps> = ({
     return (
       <Card>
         <CardHeader>
-          <CardTitle className="text-xl">
-            Porównanie strategii cachingu
-          </CardTitle>
+          <CardTitle className="text-xl">Porównanie strategii</CardTitle>
         </CardHeader>
         <CardContent>
           <Skeleton className="w-full h-[300px]" />
@@ -79,9 +77,7 @@ const StrategyComparisonChart: React.FC<StrategyComparisonChartProps> = ({
     return (
       <Card>
         <CardHeader>
-          <CardTitle className="text-xl">
-            Porównanie strategii cachingu
-          </CardTitle>
+          <CardTitle className="text-xl">Porównanie strategii</CardTitle>
         </CardHeader>
         <CardContent>
           <Alert variant="destructive">
@@ -99,9 +95,7 @@ const StrategyComparisonChart: React.FC<StrategyComparisonChartProps> = ({
     return (
       <Card>
         <CardHeader>
-          <CardTitle className="text-xl">
-            Porównanie strategii cachingu
-          </CardTitle>
+          <CardTitle className="text-xl">Porównanie strategii</CardTitle>
         </CardHeader>
         <CardContent>
           <p className="text-center text-muted-foreground py-12">
@@ -118,7 +112,7 @@ const StrategyComparisonChart: React.FC<StrategyComparisonChartProps> = ({
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle className="text-xl">Porównanie strategii cachingu</CardTitle>
+        <CardTitle className="text-xl">Porównanie strategii</CardTitle>
         {data.bestStrategy && (
           <Badge variant="success" className="ml-2">
             Najlepsza: {data.bestStrategy}

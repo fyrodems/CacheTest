@@ -1,10 +1,11 @@
 ---
 import "../styles/global.css";
-import Header from "../components/Header.astro";
+// import Header from "../components/Header.astro";
 import SideMenu from "../components/SideMenu.astro";
 import { ViewTransitions } from "astro:transitions";
 
 interface Props {
+  // eslint-disable-next-line prettier/prettier
   title?: string;
 }
 
@@ -25,22 +26,15 @@ const { title = "CacheTest PWA" } = Astro.props;
     <title>{title}</title>
     <ViewTransitions />
   </head>
-  <body class="min-h-screen bg-background">
+  <body class="min-h-screen bg-background dark">
     <div class="flex min-h-screen">
       <SideMenu />
       <div class="flex flex-col flex-1">
-        <Header />
+        <!-- <Header /> -->
         <main class="flex-1">
           <slot />
         </main>
-        <footer class="bg-muted py-4">
-          <div
-            class="container mx-auto text-center text-muted-foreground text-sm"
-          >
-            &copy; {new Date().getFullYear()} CacheTest PWA - Narzędzie do testowania
-            strategii cache'owania
-          </div>
-        </footer>
+       
       </div>
     </div>
   </body>
