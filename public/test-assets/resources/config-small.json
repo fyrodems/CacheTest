@@ -1,0 +1,14 @@
+{
+    "appName": "Test App",
+    "version": "1.0.0",
+    "settings": {
+        "theme": "light",
+        "language": "pl",
+        "debug": false
+    },
+    "features": {
+        "feature1": true,
+        "feature2": false,
+        "feature3": true
+    }
+}

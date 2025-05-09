@@ -140,7 +140,6 @@ export const LargeImagesPage = () => {
   }, [isRunning, startTime, imageResults]);
 
   const startTest = async () => {
-    console.log("ble");
     // Reset state
     setIsRunning(true);
     setStartTime(new Date());
