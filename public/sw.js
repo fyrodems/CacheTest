@@ -71,6 +71,10 @@ self.addEventListener("fetch", (event) => {
 async function fetchNetworkFirst(event) {
   const request = event.request;
 
+  if (!request.url.startsWith("http")) {
+    return fetch(request);
+  }
+
   try {
     // Najpierw próbujemy pobrać z sieci
     const networkResponse = await fetch(request);
@@ -100,6 +104,10 @@ async function fetchNetworkFirst(event) {
 async function fetchCacheFirst(event) {
   const request = event.request;
 
+  if (!request.url.startsWith("http")) {
+    return fetch(request);
+  }
+
   // Najpierw próbujemy z cache'a
   const cachedResponse = await caches.match(request);
   if (cachedResponse) {
@@ -128,6 +136,10 @@ async function fetchCacheFirst(event) {
 async function fetchStaleWhileRevalidate(event) {
   const request = event.request;
 
+  if (!request.url.startsWith("http")) {
+    return fetch(request);
+  }
+
   // Próbujemy z cache'a
   const cachedResponse = await caches.match(request);
 
@@ -151,6 +163,10 @@ async function fetchStaleWhileRevalidate(event) {
 // Implementacja Cache Then Network
 async function fetchCacheThenNetwork(event) {
   const request = event.request;
+
+  if (!request.url.startsWith("http")) {
+    return fetch(request);
+  }
 
   // Tworzymy promisę dla cache i sieci jednocześnie
   const cachedResponsePromise = caches.match(request);
