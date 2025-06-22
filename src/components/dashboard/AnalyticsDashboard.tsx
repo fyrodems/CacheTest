@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo, useId } from "react";
+import React, { useEffect, useState, useMemo, useId, useCallback } from "react";
 import {
   Select,
   SelectContent,
@@ -6,6 +6,26 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+
+interface AggregatedMetrics {
+  fp_ms?: number;
+  fcp_ms?: number;
+  lcp_ms?: number;
+  tti_ms?: number;
+  fid_ms?: number;
+  ttfb_ms?: number;
+  offline_availability?: boolean;
+}
+
+interface Resource {
+  url: string;
+  type: string;
+  size_bytes: number;
+  load_time_ms?: number;
+  exec_time_ms?: number | null;
+  cache_hit?: boolean;
+}
 
 interface TestResult {
   test_run_id: string;
@@ -15,10 +35,8 @@ interface TestResult {
   network_condition: string;
   start_timestamp: string;
   end_timestamp: string;
-  lcp_ms?: number;
-  fcp_ms?: number;
-  load_time_ms?: number;
-  // ... inne pola
+  aggregated_metrics?: AggregatedMetrics;
+  resources?: Resource[];
 }
 
 function getStats(values: number[]) {
@@ -50,6 +68,9 @@ const AnalyticsDashboard = () => {
   const scenarioId = useId();
   const networkId = useId();
   const sessionId = useId();
+
+  const [excludeAnomalies, setExcludeAnomalies] = useState(false);
+  const anomalySwitchId = useId();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -96,37 +117,104 @@ const AnalyticsDashboard = () => {
   }, [data, strategy, scenario, network, session]);
 
   // Agregacja
-  const lcpStats = useMemo(
+  const lcpArr = useMemo(
     () =>
-      getStats(
-        filtered
-          .map((d) => Number(d.aggregated_metrics?.lcp_ms))
-          .filter((v) => !isNaN(v)),
+      filtered
+        .map((d) => Number(d.aggregated_metrics?.lcp_ms))
+        .filter((v) => !isNaN(v)),
+    [filtered],
+  );
+  const fcpArr = useMemo(
+    () =>
+      filtered
+        .map((d) => Number(d.aggregated_metrics?.fcp_ms))
+        .filter((v) => !isNaN(v)),
+    [filtered],
+  );
+  const loadArr = useMemo(
+    () =>
+      filtered.flatMap((d) =>
+        Array.isArray(d.resources)
+          ? d.resources
+              .map((r) => Number(r.load_time_ms))
+              .filter((v) => !isNaN(v))
+          : [],
       ),
     [filtered],
   );
-  const fcpStats = useMemo(
+
+  const lcpStats = useMemo(() => getStats(lcpArr), [lcpArr]);
+  const fcpStats = useMemo(() => getStats(fcpArr), [fcpArr]);
+  const loadStats = useMemo(() => getStats(loadArr), [loadArr]);
+
+  // Wykrywanie anomalii
+  // Outlier = LCP, FCP, load_time_ms > 3x mediana
+  const anomalies = useMemo(() => {
+    const lcpMed = lcpStats.median ?? 0;
+    const fcpMed = fcpStats.median ?? 0;
+    const loadMed = loadStats.median ?? 0;
+    const outliers: { test: TestResult; reasons: string[] }[] = [];
+    filtered.forEach((test) => {
+      const reasons: string[] = [];
+      const lcp = Number(test.aggregated_metrics?.lcp_ms);
+      if (lcpMed && lcp > 3 * lcpMed)
+        reasons.push(`LCP > 3x mediana (${lcp} > ${3 * lcpMed})`);
+      const fcp = Number(test.aggregated_metrics?.fcp_ms);
+      if (fcpMed && fcp > 3 * fcpMed)
+        reasons.push(`FCP > 3x mediana (${fcp} > ${3 * fcpMed})`);
+      if (Array.isArray(test.resources)) {
+        test.resources.forEach((r, idx) => {
+          const load = Number(r.load_time_ms);
+          if (loadMed && load > 3 * loadMed) {
+            reasons.push(
+              `Resource #${idx + 1} (${r.url}) load_time_ms > 3x mediana (${load} > ${3 * loadMed})`,
+            );
+          }
+        });
+      }
+      if (reasons.length) {
+        outliers.push({ test, reasons });
+      }
+    });
+    return outliers;
+  }, [filtered, lcpStats.median, fcpStats.median, loadStats.median]);
+
+  // Filtrowanie wyników po wykluczeniu anomalii
+  const filteredNoAnomalies = useMemo(() => {
+    if (!excludeAnomalies) return filtered;
+    const outlierIds = new Set(anomalies.map((a) => a.test.test_run_id));
+    return filtered.filter((t) => !outlierIds.has(t.test_run_id));
+  }, [filtered, excludeAnomalies, anomalies]);
+
+  // Agregacja po wykluczeniu anomalii
+  const lcpArrFinal = useMemo(
     () =>
-      getStats(
-        filtered
-          .map((d) => Number(d.aggregated_metrics?.fcp_ms))
-          .filter((v) => !isNaN(v)),
-      ),
-    [filtered],
+      filteredNoAnomalies
+        .map((d) => Number(d.aggregated_metrics?.lcp_ms))
+        .filter((v) => !isNaN(v)),
+    [filteredNoAnomalies],
   );
-  const loadStats = useMemo(
+  const fcpArrFinal = useMemo(
     () =>
-      getStats(
-        filtered.flatMap((d) =>
-          Array.isArray(d.resources)
-            ? d.resources
-                .map((r) => Number(r.load_time_ms))
-                .filter((v) => !isNaN(v))
-            : [],
-        ),
-      ),
-    [filtered],
+      filteredNoAnomalies
+        .map((d) => Number(d.aggregated_metrics?.fcp_ms))
+        .filter((v) => !isNaN(v)),
+    [filteredNoAnomalies],
   );
+  const loadArrFinal = useMemo(
+    () =>
+      filteredNoAnomalies.flatMap((d) =>
+        Array.isArray(d.resources)
+          ? d.resources
+              .map((r) => Number(r.load_time_ms))
+              .filter((v) => !isNaN(v))
+          : [],
+      ),
+    [filteredNoAnomalies],
+  );
+  const lcpStatsFinal = useMemo(() => getStats(lcpArrFinal), [lcpArrFinal]);
+  const fcpStatsFinal = useMemo(() => getStats(fcpArrFinal), [fcpArrFinal]);
+  const loadStatsFinal = useMemo(() => getStats(loadArrFinal), [loadArrFinal]);
 
   if (loading) return <div>Ładowanie danych...</div>;
   if (error) return <div className="text-red-500">Błąd: {error}</div>;
@@ -137,7 +225,7 @@ const AnalyticsDashboard = () => {
       {/* Panel filtrów */}
       <div className="mb-6 p-4 bg-muted rounded-lg border border-border/40">
         <div className="font-semibold mb-2">Filtruj wyniki:</div>
-        <div className="flex flex-wrap gap-4">
+        <div className="flex flex-wrap gap-4 items-center">
           <div>
             <label className="block text-xs mb-1" htmlFor={strategyId}>
               Strategia
@@ -234,37 +322,71 @@ const AnalyticsDashboard = () => {
               </SelectContent>
             </Select>
           </div>
+          <div>
+            <label className="block text-xs mb-1" htmlFor={anomalySwitchId}>
+              Wyklucz anomalie
+            </label>
+            <Switch
+              id={anomalySwitchId}
+              checked={excludeAnomalies}
+              onCheckedChange={setExcludeAnomalies}
+            />
+          </div>
         </div>
       </div>
 
-      {/* Podsumowanie */}
-      {/* ... istniejące podsumowanie ... */}
       {/* Agregacja */}
       <div className="mb-6 p-4 bg-muted rounded-lg border border-border/40">
         <div className="font-semibold mb-2">
-          Agregacja wyników (po filtracji):
+          Agregacja wyników (po filtracji{excludeAnomalies ? ", bez anomalii" : ""}):
         </div>
         <ul className="text-sm space-y-1">
           <li>
-            Liczba wyników: <b>{filtered.length}</b>
+            Liczba wyników: <b>{filteredNoAnomalies.length}</b>
           </li>
           <li>
-            LCP (ms): <b>średnia:</b> {lcpStats.avg?.toFixed(0) ?? "-"},{" "}
-            <b>mediana:</b> {lcpStats.median?.toFixed(0) ?? "-"}, <b>min:</b>{" "}
-            {lcpStats.min ?? "-"}, <b>max:</b> {lcpStats.max ?? "-"}
+            LCP (ms): <b>średnia:</b> {lcpStatsFinal.avg?.toFixed(0) ?? "-"},{" "}
+            <b>mediana:</b> {lcpStatsFinal.median?.toFixed(0) ?? "-"},{" "}
+            <b>min:</b> {lcpStatsFinal.min ?? "-"}, <b>max:</b>{" "}
+            {lcpStatsFinal.max ?? "-"}
           </li>
           <li>
-            FCP (ms): <b>średnia:</b> {fcpStats.avg?.toFixed(0) ?? "-"},{" "}
-            <b>mediana:</b> {fcpStats.median?.toFixed(0) ?? "-"}, <b>min:</b>{" "}
-            {fcpStats.min ?? "-"}, <b>max:</b> {fcpStats.max ?? "-"}
+            FCP (ms): <b>średnia:</b> {fcpStatsFinal.avg?.toFixed(0) ?? "-"},{" "}
+            <b>mediana:</b> {fcpStatsFinal.median?.toFixed(0) ?? "-"},{" "}
+            <b>min:</b> {fcpStatsFinal.min ?? "-"}, <b>max:</b>{" "}
+            {fcpStatsFinal.max ?? "-"}
           </li>
           <li>
-            Load time (ms): <b>średnia:</b> {loadStats.avg?.toFixed(0) ?? "-"},{" "}
-            <b>mediana:</b> {loadStats.median?.toFixed(0) ?? "-"}, <b>min:</b>{" "}
-            {loadStats.min ?? "-"}, <b>max:</b> {loadStats.max ?? "-"}
+            Load time (ms): <b>średnia:</b>{" "}
+            {loadStatsFinal.avg?.toFixed(0) ?? "-"}, <b>mediana:</b>{" "}
+            {loadStatsFinal.median?.toFixed(0) ?? "-"}, <b>min:</b>{" "}
+            {loadStatsFinal.min ?? "-"}, <b>max:</b> {loadStatsFinal.max ?? "-"}
           </li>
         </ul>
       </div>
+
+      {/* Wykluczone anomalie */}
+      {excludeAnomalies && anomalies.length > 0 && (
+        <div className="mb-6 p-4 bg-yellow-100 dark:bg-yellow-900/30 border border-yellow-400 dark:border-yellow-700 rounded-lg">
+          <div className="font-semibold mb-2 text-yellow-900 dark:text-yellow-200">
+            Wykluczone anomalie ({anomalies.length}):
+          </div>
+          <ul className="text-xs space-y-2">
+            {anomalies.map((a, idx) => (
+              <li key={a.test.test_run_id} className="mb-1">
+                <div className="font-mono text-[11px] text-yellow-900 dark:text-yellow-200">
+                  {a.test.test_run_id} (sesja: {a.test.session_id})
+                </div>
+                <ul className="ml-4 list-disc">
+                  {a.reasons.map((r, i) => (
+                    <li key={i}>{r}</li>
+                  ))}
+                </ul>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       {/* Istniejące podsumowanie */}
       {data && (
@@ -275,13 +397,15 @@ const AnalyticsDashboard = () => {
               Liczba testów: <b>{data.length}</b>
             </li>
             <li>
-              Liczba unikalnych strategii:{" "}
-              <b>{filterOptions.strategies.length}</b> (
-              {filterOptions.strategies.join(", ")})
+              Liczba unikalnych strategii: {" "}
+              <b>{filterOptions.strategies.length}</b> ({
+                filterOptions.strategies.join(", ")
+              })
             </li>
             <li>
-              Liczba scenariuszy: <b>{filterOptions.scenarios.length}</b> (
-              {filterOptions.scenarios.join(", ")})
+              Liczba scenariuszy: <b>{filterOptions.scenarios.length}</b> ({
+                filterOptions.scenarios.join(", ")
+              })
             </li>
             <li>
               Liczba warunków sieciowych: <b>{filterOptions.networks.length}</b>{" "}
