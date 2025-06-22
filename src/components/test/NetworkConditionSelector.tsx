@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/label-has-associated-control */
 import { useId } from "react";
 import {
   Select,
@@ -40,7 +41,7 @@ export const NetworkConditionSelector = ({
           <SelectItem value={NetworkCondition.GOOD}>Dobre</SelectItem>
           <SelectItem value={NetworkCondition.SLOW}>Wolne</SelectItem>
           <SelectItem value={NetworkCondition.FLAKY}>Przerywane</SelectItem>
-          <SelectItem value={NetworkCondition.OFFLINE}>Offline</SelectItem>
+          {/* <SelectItem value={NetworkCondition.OFFLINE}>Offline</SelectItem> */}
         </SelectContent>
       </Select>
     </div>

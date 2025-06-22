@@ -25,3 +25,6 @@ pnpm-debug.log*
 
 # notes
 prompts/
+results/
+praca/
+*.json

@@ -3,7 +3,7 @@
 const currentPath = Astro.url.pathname;
 
 const links = [
-  { href: "/", label: "Dashboard", active: currentPath === "/" },
+  // { href: "/", label: "Dashboard", active: currentPath === "/" },
   {
     href: "/test/large-images",
     label: "Duże obrazy",
@@ -33,7 +33,7 @@ const links = [
 ---
 
 <aside
-  class="hidden md:block w-64 border-r border-border/40 h-screen px-3 py-4 overflow-y-auto bg-muted/40"
+  class="hidden md:block sticky top-0 w-64 border-r border-border/40 h-screen px-3 py-4 overflow-y-auto bg-muted/40"
 >
   <div class="flex flex-col h-full">
     <div class="mb-6">
