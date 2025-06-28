@@ -7,6 +7,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
+import MetricGroupedBarChart from "./charts/MetricGroupedBarChart";
+import ScatterLoadVsExec from "./charts/ScatterLoadVsExec";
+import ScatterLCPvsFCP from "./charts/ScatterLCPvsFCP";
+import MetricHistogram from "./charts/MetricHistogram";
 
 interface AggregatedMetrics {
   fp_ms?: number;
@@ -216,6 +220,34 @@ const AnalyticsDashboard = () => {
   const fcpStatsFinal = useMemo(() => getStats(fcpArrFinal), [fcpArrFinal]);
   const loadStatsFinal = useMemo(() => getStats(loadArrFinal), [loadArrFinal]);
 
+  // Wyciągam tablice fpArrFinal i ttiArrFinal z filteredNoAnomalies
+  const fpArrFinal = useMemo(
+    () =>
+      filteredNoAnomalies
+        .map((d) => Number(d.aggregated_metrics?.fp_ms))
+        .filter((v) => !isNaN(v)),
+    [filteredNoAnomalies],
+  );
+  const ttiArrFinal = useMemo(
+    () =>
+      filteredNoAnomalies
+        .map((d) => Number(d.aggregated_metrics?.tti_ms))
+        .filter((v) => !isNaN(v)),
+    [filteredNoAnomalies],
+  );
+
+  // Wyznaczam globalne min, max dla wszystkich metryk histogramów
+  const allHistogramValues = [
+    ...fpArrFinal,
+    ...fcpArrFinal,
+    ...lcpArrFinal,
+    ...ttiArrFinal,
+    ...loadArrFinal,
+  ];
+  const globalMin = allHistogramValues.length ? Math.min(...allHistogramValues) : 0;
+  const globalMax = allHistogramValues.length ? Math.max(...allHistogramValues) : 1;
+  const globalBinCount = 20;
+
   if (loading) return <div>Ładowanie danych...</div>;
   if (error) return <div className="text-red-500">Błąd: {error}</div>;
   if (!data) return <div>Brak danych</div>;
@@ -387,6 +419,36 @@ const AnalyticsDashboard = () => {
           </ul>
         </div>
       )}
+
+      {/* Sekcja: Histogramy metryk */}
+      <div className="mb-8">
+        <h2 className="font-semibold mb-4 text-lg">Histogramy metryk</h2>
+        <div className="grid grid-cols-1 gap-8">
+          <MetricHistogram data={fpArrFinal} label="FP (ms)" min={globalMin} max={globalMax} binCount={globalBinCount} />
+          <MetricHistogram data={fcpArrFinal} label="FCP (ms)" min={globalMin} max={globalMax} binCount={globalBinCount} />
+          <MetricHistogram data={lcpArrFinal} label="LCP (ms)" min={globalMin} max={globalMax} binCount={globalBinCount} />
+          <MetricHistogram data={ttiArrFinal} label="TTI (ms)" min={globalMin} max={globalMax} binCount={globalBinCount} />
+          <MetricHistogram data={loadArrFinal} label="load_time_ms" axisLabel="Liczba zasobów" min={globalMin} max={globalMax} binCount={globalBinCount} />
+        </div>
+      </div>
+
+      {/* Grouped bar chart LCP po strategii */}
+      <div className="mb-8">
+        <h2 className="font-semibold mb-2 text-lg">Grouped bar chart LCP według strategii</h2>
+        <MetricGroupedBarChart data={filteredNoAnomalies} metric="lcp_ms" groupBy="strategy" label="Strategia" />
+      </div>
+
+      {/* Scatter plot load_time_ms vs. exec_time_ms (dynamic-js) */}
+      <div className="mb-8">
+        <h2 className="font-semibold mb-2 text-lg">Scatter plot: load_time_ms vs. exec_time_ms (dynamic-js)</h2>
+        <ScatterLoadVsExec data={filteredNoAnomalies} />
+      </div>
+
+      {/* Scatter plot LCP vs. FCP */}
+      <div className="mb-8">
+        <h2 className="font-semibold mb-2 text-lg">Scatter plot: LCP vs. FCP</h2>
+        <ScatterLCPvsFCP data={filteredNoAnomalies} />
+      </div>
 
       {/* Istniejące podsumowanie */}
       {data && (

@@ -1,0 +1,11 @@
+Dodanie nowej podstrony analytics.astro w src/pages i wpisu w sidebarze
+Stworzenie komponentu React AnalyticsDashboard.tsx w src/components/dashboard/
+Implementacja pobierania i parsowania danych z pliku JSON w public/
+Wyświetlenie podsumowania danych
+
+Dodanie filtrowania i agregacji
+Dodanie wykrywania anomalii
+
+Dodanie wizualizacji i porównań
+Dodanie generowania raportów
+Dokumentacja i podsumowanie
